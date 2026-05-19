@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberShield by Ahad</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --panel: #0f1628;
+    --border: #1e3a5f;
+    --green: #00ff88;
+    --red: #ff3355;
+    --yellow: #ffcc00;
+    --blue: #00aaff;
+    --text: #c8d8f0;
+    --dim: #4a6080;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 16px;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(0,170,255,0.05) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 80%, rgba(0,255,136,0.04) 0%, transparent 60%);
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+    animation: fadeDown 0.6s ease;
+  }
+
+  .header .icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 12px var(--blue));
+  }
+
+  .header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header p {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--dim);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    margin-top: 6px;
+  }
+
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, rgba(0,170,255,0.15), rgba(0,255,136,0.1));
+    border: 1px solid rgba(0,170,255,0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--blue);
+    letter-spacing: 2px;
+    margin-top: 10px;
+  }
+
+  .ai-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 1.5s infinite;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    width: 100%;
+    max-width: 720px;
+    box-shadow: 0 0 40px rgba(0,170,255,0.06);
+    animation: fadeUp 0.7s ease;
+  }
+
+  .input-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--blue);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(0,170,255,0.1);
+  }
+
+  input[type="text"]::placeholder { color: var(--dim); }
+
+  .btn-row { display: flex; gap: 10px; }
+
+  button {
+    background: linear-gradient(135deg, var(--blue), #0066cc);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 22px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,170,255,0.3);
+  }
+
+  button:active { transform: translateY(0); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-ai {
+    background: linear-gradient(135deg, #6600cc, #aa00ff);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+  }
+
+  .btn-ai:hover { box-shadow: 0 6px 20px rgba(170,0,255,0.3); }
+
+  /* Scan result box */
+  .result-box {
+    margin-top: 24px;
+    border-radius: 10px;
+    padding: 22px;
+    display: none;
+    animation: fadeUp 0.4s ease;
+    border: 1px solid;
+  }
+
+  .result-box.safe { background: rgba(0,255,136,0.06); border-color: var(--green); }
+  .result-box.danger { background: rgba(255,51,85,0.07); border-color: var(--red); }
+  .result-box.warning { background: rgba(255,204,0,0.06); border-color: var(--yellow); }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .result-icon { font-size: 2rem; }
+
+  .result-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .safe .result-title { color: var(--green); }
+  .danger .result-title { color: var(--red); }
+  .warning .result-title { color: var(--yellow); }
+
+  .score-bar-wrap { margin-bottom: 18px; }
+
+  .score-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--dim);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .score-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .score-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s cubic-bezier(.4,0,.2,1);
+  }
+
+  .checks { display: flex; flex-direction: column; gap: 8px; }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.03);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+  }
+
+  .check-item .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+
+  .check-item.bad .dot { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  .check-item.good .dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .check-item.warn .dot { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+
+  /* AI Analysis Box */
+  .ai-box {
+    margin-top: 24px;
+    border-radius: 10px;
+    padding: 22px;
+    display: none;
+    animation: fadeUp 0.4s ease;
+    border: 1px solid rgba(170,0,255,0.4);
+    background: rgba(102,0,204,0.07);
+  }
+
+  .ai-box-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .ai-box-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: #aa00ff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .ai-thinking {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--dim);
+    padding: 12px;
+  }
+
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(170,0,255,0.2);
+    border-top-color: #aa00ff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  .ai-content {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .ai-content .ai-verdict {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    background: rgba(255,255,255,0.04);
+    border-left: 3px solid #aa00ff;
+  }
+
+  .ai-content p { margin-bottom: 10px; }
+
+  .ai-risk-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 1px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+
+  .ai-risk-tag.high { background: rgba(255,51,85,0.15); color: var(--red); border: 1px solid rgba(255,51,85,0.3); }
+  .ai-risk-tag.medium { background: rgba(255,204,0,0.12); color: var(--yellow); border: 1px solid rgba(255,204,0,0.3); }
+  .ai-risk-tag.low { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.25); }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 22px 0;
+  }
+
+  .examples { margin-top: 24px; }
+
+  .examples-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--dim);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  .example-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .pill {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .pill:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    background: rgba(0,170,255,0.07);
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="icon">🛡️</span>
+  <h1>CyberShield</h1>
+  <p>// BY AHAD — URL SECURITY ANALYSIS TOOL //</p>
+  <div class="ai-badge"><span class="dot"></span> AI POWERED BY CLAUDE</div>
+</div>
+
+<div class="card">
+  <span class="input-label">▶ ENTER URL TO ANALYZE</span>
+  <div class="input-row">
+    <input type="text" id="urlInput" placeholder="https://example.com" />
+  </div>
+  <div class="btn-row" style="margin-top:10px;">
+    <button onclick="analyze()" id="scanBtn">SCAN</button>
+    <button class="btn-ai" onclick="analyzeWithAI()" id="aiBtn">🤖 AI DEEP SCAN</button>
+  </div>
+
+  <!-- Regular scan result -->
+  <div class="result-box" id="resultBox">
+    <div class="result-header">
+      <span class="result-icon" id="resultIcon"></span>
+      <span class="result-title" id="resultTitle"></span>
+    </div>
+    <div class="score-bar-wrap">
+      <div class="score-label">
+        <span>PHISHING RISK SCORE</span>
+        <span id="scoreText"></span>
+      </div>
+      <div class="score-bar">
+        <div class="score-fill" id="scoreFill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="checks" id="checksList"></div>
+  </div>
+
+  <!-- AI Analysis box -->
+  <div class="ai-box" id="aiBox">
+    <div class="ai-box-header">
+      <span style="font-size:1.3rem;">🤖</span>
+      <span class="ai-box-title">Claude AI Deep Analysis</span>
+    </div>
+    <div id="aiContent"></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="examples">
+    <div class="examples-title">// TRY THESE EXAMPLES</div>
+    <div class="example-pills">
+      <span class="pill" onclick="setUrl('https://www.google.com')">google.com</span>
+      <span class="pill" onclick="setUrl('http://paypal-login.free-secure.tk/verify')">paypal phishing</span>
+      <span class="pill" onclick="setUrl('https://secure-bank1og1n.xyz/account')">fake bank</span>
+      <span class="pill" onclick="setUrl('https://github.com')">github.com</span>
+      <span class="pill" onclick="setUrl('http://192.168.1.1/admin/login')">IP address</span>
+      <span class="pill" onclick="setUrl('https://amaz0n-deals.ru/free-gift')">amazon fake</span>
+    </div>
+  </div>
+</div>
+
+<script>
+function setUrl(url) {
+  document.getElementById('urlInput').value = url;
+  analyze();
+}
+
+function analyze() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) { alert('URL enter karein!'); return; }
+
+  const checks = [];
+  let riskScore = 0;
+
+  if (url.startsWith('https://')) {
+    checks.push({ type: 'good', msg: 'HTTPS secure connection detected' });
+  } else if (url.startsWith('http://')) {
+    checks.push({ type: 'bad', msg: 'HTTP used — no encryption (insecure)' });
+    riskScore += 20;
+  }
+
+  if (/https?:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(url)) {
+    checks.push({ type: 'bad', msg: 'IP address used instead of domain name' });
+    riskScore += 30;
+  }
+
+  const suspiciousTLDs = ['.tk', '.ml', '.ga', '.cf', '.gq', '.xyz', '.ru', '.cn', '.top', '.click', '.loan', '.work', '.pw'];
+  if (suspiciousTLDs.some(t => url.toLowerCase().includes(t))) {
+    checks.push({ type: 'bad', msg: 'Suspicious domain extension detected (.tk/.xyz/.ru etc.)' });
+    riskScore += 25;
+  }
+
+  const phishWords = ['login', 'verify', 'secure', 'account', 'update', 'confirm', 'banking', 'signin', 'password', 'credential', 'free-gift', 'winner', 'lucky'];
+  const foundWords = phishWords.filter(w => url.toLowerCase().includes(w));
+  if (foundWords.length > 0) {
+    checks.push({ type: 'warn', msg: `Suspicious keywords found: ${foundWords.join(', ')}` });
+    riskScore += foundWords.length * 8;
+  }
+
+  let domainPart = '';
+  try { domainPart = new URL(url).hostname.toLowerCase(); } catch(e) { domainPart = url.toLowerCase(); }
+
+  const brands = ['paypal', 'amazon', 'google', 'facebook', 'apple', 'microsoft', 'netflix', 'bank', 'ebay'];
+  const spoofed = brands.filter(b => {
+    const spoofVariants = [b+'0', b.replace('o','0'), b+'-', '-'+b, b+'1', 'l'+b.slice(1)];
+    return url.toLowerCase().includes(b) && spoofVariants.some(v => url.toLowerCase().includes(v));
+  });
+  if (spoofed.length > 0) {
+    checks.push({ type: 'bad', msg: `Brand impersonation detected: ${spoofed.join(', ')}` });
+    riskScore += 35;
+  }
+
+  try {
+    const parts = new URL(url).hostname.split('.');
+    if (parts.length > 4) {
+      checks.push({ type: 'warn', msg: `Too many subdomains (${parts.length} levels) — suspicious` });
+      riskScore += 15;
+    } else {
+      checks.push({ type: 'good', msg: 'Normal domain structure' });
+    }
+  } catch(e) {}
+
+  if (url.length > 100) {
+    checks.push({ type: 'warn', msg: `Very long URL (${url.length} chars) — often used to hide real destination` });
+    riskScore += 10;
+  } else {
+    checks.push({ type: 'good', msg: `URL length normal (${url.length} chars)` });
+  }
+
+  if ((url.match(/@/g) || []).length > 0) {
+    checks.push({ type: 'bad', msg: '@ symbol in URL — can redirect to different host' });
+    riskScore += 20;
+  }
+
+  if (url.includes('//') && url.indexOf('//') !== url.lastIndexOf('//')) {
+    checks.push({ type: 'bad', msg: 'Multiple // found — possible redirect trick' });
+    riskScore += 15;
+  }
+
+  const safeDomains = ['google.com', 'github.com', 'microsoft.com', 'apple.com', 'amazon.com', 'facebook.com', 'youtube.com', 'wikipedia.org'];
+  const isSafe = safeDomains.some(d => domainPart === d || domainPart.endsWith('.' + d));
+  if (isSafe) {
+    checks.push({ type: 'good', msg: 'Domain matches known trusted website' });
+    riskScore = Math.max(0, riskScore - 30);
+  }
+
+  riskScore = Math.min(100, Math.max(0, riskScore));
+
+  const box = document.getElementById('resultBox');
+  box.style.display = 'block';
+  box.className = 'result-box';
+
+  const icon = document.getElementById('resultIcon');
+  const title = document.getElementById('resultTitle');
+  const fill = document.getElementById('scoreFill');
+  const scoreText = document.getElementById('scoreText');
+
+  if (riskScore >= 60) {
+    box.classList.add('danger');
+    icon.textContent = '🚨';
+    title.textContent = 'HIGH RISK — LIKELY PHISHING';
+    fill.style.background = 'linear-gradient(90deg, #ff3355, #ff6677)';
+  } else if (riskScore >= 30) {
+    box.classList.add('warning');
+    icon.textContent = '⚠️';
+    title.textContent = 'SUSPICIOUS — BE CAREFUL';
+    fill.style.background = 'linear-gradient(90deg, #ffcc00, #ffaa00)';
+  } else {
+    box.classList.add('safe');
+    icon.textContent = '✅';
+    title.textContent = 'LOOKS SAFE';
+    fill.style.background = 'linear-gradient(90deg, #00ff88, #00cc66)';
+  }
+
+  scoreText.textContent = riskScore + '/100';
+  setTimeout(() => { fill.style.width = riskScore + '%'; }, 50);
+
+  document.getElementById('checksList').innerHTML = checks.map(c =>
+    `<div class="check-item ${c.type}"><span class="dot"></span><span>${c.msg}</span></div>`
+  ).join('');
+}
+
+async function analyzeWithAI() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) { alert('URL enter karein!'); return; }
+
+  // First run regular scan
+  analyze();
+
+  const aiBox = document.getElementById('aiBox');
+  const aiContent = document.getElementById('aiContent');
+  const aiBtn = document.getElementById('aiBtn');
+
+  aiBox.style.display = 'block';
+  aiBtn.disabled = true;
+  aiContent.innerHTML = `
+    <div class="ai-thinking">
+      <div class="spinner"></div>
+      <span>Claude AI URL analyze kar raha hai...</span>
+    </div>`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: `You are CyberShield AI, an expert cybersecurity analyst specializing in phishing URL detection. 
+Analyze URLs for phishing indicators and respond in this EXACT JSON format only, no markdown:
+{
+  "verdict": "SAFE|SUSPICIOUS|DANGEROUS",
+  "riskLevel": "low|medium|high",
+  "confidence": "85%",
+  "summary": "2-3 sentence analysis in simple English",
+  "redFlags": ["flag1", "flag2"],
+  "advice": "What the user should do"
+}`,
+        messages: [{ role: "user", content: `Analyze this URL for phishing: ${url}` }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content.map(i => i.text || '').join('');
+
+    let result;
+    try {
+      result = JSON.parse(text.replace(/```json|```/g, '').trim());
+    } catch(e) {
+      // fallback if JSON parse fails
+      result = {
+        verdict: "ANALYSIS COMPLETE",
+        riskLevel: "medium",
+        confidence: "N/A",
+        summary: text,
+        redFlags: [],
+        advice: "Please verify this URL carefully before proceeding."
+      };
+    }
+
+    const verdictColor = result.riskLevel === 'high' ? 'var(--red)' : result.riskLevel === 'medium' ? 'var(--yellow)' : 'var(--green)';
+    const tagClass = result.riskLevel === 'high' ? 'high' : result.riskLevel === 'medium' ? 'medium' : 'low';
+
+    const flagsHtml = (result.redFlags || []).map(f =>
+      `<span class="ai-risk-tag ${tagClass}">${f}</span>`
+    ).join('');
+
+    aiContent.innerHTML = `
+      <div class="ai-content">
+        <div class="ai-verdict">
+          🤖 VERDICT: <strong style="color:${verdictColor}">${result.verdict}</strong>
+          &nbsp;&nbsp;|&nbsp;&nbsp; CONFIDENCE: ${result.confidence}
+        </div>
+        <p>${result.summary}</p>
+        ${flagsHtml ? `<div style="margin:10px 0;">${flagsHtml}</div>` : ''}
+        <div style="margin-top:12px; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:6px; font-family:'Share Tech Mono',monospace; font-size:0.78rem; color:var(--blue);">
+          💡 ${result.advice}
+        </div>
+      </div>`;
+
+  } catch(err) {
+    aiContent.innerHTML = `
+      <div class="ai-thinking" style="color:var(--red);">
+        ⚠️ AI analysis failed: ${err.message}
+      </div>`;
+  }
+
+  aiBtn.disabled = false;
+}
+
+document.getElementById('urlInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') analyze();
+});
+</script>
+</body>
+</html>
