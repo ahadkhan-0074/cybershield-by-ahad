@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CyberShield by Ahad</title>
+<meta name="google-site-verification" content="m-TC6NqkRfI-75MvKluamTxEAhP3Dv00QPoaNt7lqTA" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
 
@@ -133,7 +134,7 @@
 
   input[type="text"]::placeholder { color: var(--dim); }
 
-  .btn-row { display: flex; gap: 10px; }
+  .btn-row { display: flex; gap: 10px; margin-top: 10px; }
 
   button {
     background: linear-gradient(135deg, var(--blue), #0066cc);
@@ -169,7 +170,6 @@
 
   .btn-ai:hover { box-shadow: 0 6px 20px rgba(170,0,255,0.3); }
 
-  /* Scan result box */
   .result-box {
     margin-top: 24px;
     border-radius: 10px;
@@ -252,7 +252,6 @@
   .check-item.good .dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
   .check-item.warn .dot { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
 
-  /* AI Analysis Box */
   .ai-box {
     margin-top: 24px;
     border-radius: 10px;
@@ -376,9 +375,7 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   @keyframes pulse {
     0%, 100% { opacity: 1; }
@@ -400,12 +397,11 @@
   <div class="input-row">
     <input type="text" id="urlInput" placeholder="https://example.com" />
   </div>
-  <div class="btn-row" style="margin-top:10px;">
+  <div class="btn-row">
     <button onclick="analyze()" id="scanBtn">SCAN</button>
     <button class="btn-ai" onclick="analyzeWithAI()" id="aiBtn">🤖 AI DEEP SCAN</button>
   </div>
 
-  <!-- Regular scan result -->
   <div class="result-box" id="resultBox">
     <div class="result-header">
       <span class="result-icon" id="resultIcon"></span>
@@ -423,7 +419,6 @@
     <div class="checks" id="checksList"></div>
   </div>
 
-  <!-- AI Analysis box -->
   <div class="ai-box" id="aiBox">
     <div class="ai-box-header">
       <span style="font-size:1.3rem;">🤖</span>
@@ -572,7 +567,6 @@ async function analyzeWithAI() {
   const url = document.getElementById('urlInput').value.trim();
   if (!url) { alert('URL enter karein!'); return; }
 
-  // First run regular scan
   analyze();
 
   const aiBox = document.getElementById('aiBox');
@@ -615,7 +609,6 @@ Analyze URLs for phishing indicators and respond in this EXACT JSON format only,
     try {
       result = JSON.parse(text.replace(/```json|```/g, '').trim());
     } catch(e) {
-      // fallback if JSON parse fails
       result = {
         verdict: "ANALYSIS COMPLETE",
         riskLevel: "medium",
